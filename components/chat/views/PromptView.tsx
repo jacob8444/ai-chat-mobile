@@ -17,9 +17,10 @@ import { ThemedText } from "../../shared/ui/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import { availableModels } from "@/constants/Data";
-import { PromptViewProps } from "@/constants/Types";
+import { ModelProps, PromptViewProps } from "@/constants/Types";
 import { newChatMessage } from "@/helpers/general";
 import FileAttachmentModal from "../ui/FileAttachmentModal";
+import SelectModelModal from "@/components/shared/views/SelectModelModal";
 
 export default function PromptView({ onSubmit, chat }: PromptViewProps) {
   const [prompt, setPrompt] = useState("");
@@ -29,7 +30,7 @@ export default function PromptView({ onSubmit, chat }: PromptViewProps) {
   );
   const [isWaiting, setIsWaiting] = useState(false);
   const [useWebSearch, setUseWebSearch] = useState(false);
-  const [selectedModel, setSelectedModel] = useState([
+  const [selectedModel, setSelectedModel] = useState<[string, string]>([
     "Gemini 2.0 Flash Lite",
     "google/gemini-2.0-flash-lite-preview-02-05:free",
   ]);
@@ -48,11 +49,6 @@ export default function PromptView({ onSubmit, chat }: PromptViewProps) {
       duration: 100,
       useNativeDriver: false,
     }).start();
-  };
-
-  const selectModel = (model: string[]) => {
-    setSelectedModel(model);
-    setIsModelPickerVisible(false);
   };
 
   const handleSubmit = async () => {
@@ -215,86 +211,17 @@ export default function PromptView({ onSubmit, chat }: PromptViewProps) {
             setSelectedImage(base64Data);
           }}
         />
-        {/* Model Selection Modal TODO: Move to separate modal file */}
-        <Modal
-          visible={isModelPickerVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setIsModelPickerVisible(false)}
-        >
-          <TouchableOpacity
-            style={styles.modalOverlay}
-            activeOpacity={1}
-            onPress={() => setIsModelPickerVisible(false)}
-          >
-            <View style={styles.modalContent}>
-              <ThemedText style={styles.modalTitle}>Select Model</ThemedText>
-              <ScrollView style={styles.modelList}>
-                {availableModels.map((model) => (
-                  <TouchableOpacity
-                    key={model.alias}
-                    style={[
-                      styles.modelOption,
-                      selectedModel[0] === model.name &&
-                        selectedModel[1] === model.alias &&
-                        styles.selectedModelOption,
-                    ]}
-                    onPress={() => selectModel([model.name, model.alias])}
-                  >
-                    <View style={styles.modelOptionContent}>
-                      <ThemedText
-                        style={[
-                          styles.modelOptionText,
-                          selectedModel[0] === model.name &&
-                            selectedModel[1] === model.alias &&
-                            styles.selectedModelText,
-                        ]}
-                      >
-                        {model.name}
-                      </ThemedText>
-                      <View style={styles.modelIcons}>
-                        {model.supportsReasoning && (
-                          <View style={styles.modelFeature}>
-                            <Ionicons
-                              name="bulb-outline"
-                              size={16}
-                              color="#db2777"
-                            />
-                          </View>
-                        )}
-                        {model.supportsWebSearch && (
-                          <View style={styles.modelFeature}>
-                            <Ionicons
-                              style={styles.modelFeature}
-                              name="globe-outline"
-                              size={16}
-                              color="#3b82f6"
-                            />
-                          </View>
-                        )}
-                        {model.supportsImageUpload && (
-                          <View style={styles.modelFeature}>
-                            <Ionicons
-                              style={styles.modelFeature}
-                              name="eye-outline"
-                              size={16}
-                              color="#3b82f6"
-                            />
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          </TouchableOpacity>
-        </Modal>
+        <SelectModelModal
+          isModelPickerVisible={isModelPickerVisible}
+          setIsModelPickerVisible={setIsModelPickerVisible}
+          availableModels={availableModels}
+          selectModel={setSelectedModel}
+          selectedModel={selectedModel}
+        />
       </ThemedView>
     </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -406,72 +333,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "80%",
-    maxHeight: "60%",
-    backgroundColor: "#2d2d2d",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: "#f0f0f0",
-    textAlign: "center",
-  },
-  modelList: {
-    maxHeight: 300,
-  },
-  modelOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-    marginVertical: 4,
-  },
-  selectedModelOption: {
-    backgroundColor: "rgba(219, 39, 119, 0.15)",
-  },
-  modelOptionText: {
-    fontSize: 16,
-    color: "#e0e0e0",
-  },
-  selectedModelText: {
-    color: "#f5f5f5",
-    fontWeight: "500",
-  },
-  modelOptionContent: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginRight: 8,
-  },
-  modelIcons: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  modelFeature: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#2a2a2a",
   },
 });

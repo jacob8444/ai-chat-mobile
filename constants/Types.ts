@@ -95,3 +95,12 @@ export interface FileTypeProps {
   type: string;
   isAllowed: boolean;
 }
+
+export interface SelectModelModalProps {
+  isModelPickerVisible: boolean;
+  setIsModelPickerVisible: (visible: boolean) => void;
+  availableModels: ModelProps[];
+  selectedModel: [string, string];
+  selectModel: (model: [string, string]) => void;
+  styles?: any;
+}
