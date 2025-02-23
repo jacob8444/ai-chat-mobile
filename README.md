@@ -2,8 +2,6 @@
 
 A mobile AI chat application built with Expo using OpenRouter, inspired by the design of [t3.chat](https://t3.chat).
 
-> **Note**: The code will be cleaned up... surely
-
 ## Features
 
 - **Real-time Response Streaming** - Watch AI responses appear in real-time
