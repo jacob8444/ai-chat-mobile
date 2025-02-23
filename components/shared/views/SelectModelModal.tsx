@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { ThemedText } from "../ui/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import { ModelProps, SelectModelModalProps } from "@/constants/Types";
+import { SelectModelModalProps } from "@/constants/Types";
 
 export default function SelectModelModal({
   isModelPickerVisible,
@@ -15,7 +15,6 @@ export default function SelectModelModal({
   availableModels,
   selectedModel,
   selectModel,
-  styles,
 }: SelectModelModalProps) {
   return (
     <Modal

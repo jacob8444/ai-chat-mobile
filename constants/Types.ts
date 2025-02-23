@@ -102,5 +102,4 @@ export interface SelectModelModalProps {
   availableModels: ModelProps[];
   selectedModel: [string, string];
   selectModel: (model: [string, string]) => void;
-  styles?: any;
 }
